@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d2b">
+  <title>Field Technician Copilot | Executive Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #e5edf5;
+      --muted: #a3b1c0;
+      --navy: #0c1520;
+      --paper: #101925;
+      --line: #2a3949;
+      --teal: #58c7b5;
+      --teal-light: #183a3a;
+      --gold: #e8b64b;
+      --gold-light: #382f1c;
+      --surface: #182331;
+      --surface-raised: #1d2a39;
+      --surface-subtle: #131e2b;
+      --surface-user: #202e3e;
+      --surface-tag: #202d3b;
+      --text-strong: #d4dee8;
+      --text-body: #c5d0da;
+      --text-soft: #a9b8c6;
+      --shadow: 0 16px 44px rgb(0 0 0 / 25%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --ink: #152536;
+      --muted: #657487;
+      --navy: #101d2b;
+      --paper: #f4f6f8;
+      --line: #e1e7ec;
+      --teal: #087e78;
+      --teal-light: #e4f4f1;
+      --gold-light: #fff5dd;
+      --surface: #fff;
+      --surface-raised: #fff;
+      --surface-subtle: #fbfcfd;
+      --surface-user: #edf3f8;
+      --surface-tag: #fff;
+      --text-strong: #526274;
+      --text-body: #35485a;
+      --text-soft: #83909b;
+      --shadow: 0 16px 44px rgb(22 39 57 / 8%);
+    }
+    :root[data-theme="light"] .citation { border-color: #cfe6e2; color: #08645e; background: #f4fbfa; }
+    :root[data-theme="light"] .arch-box.core { border-color: #c7e3df; background: #f0f8f7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    button, input { font: inherit; }
+    .topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 5vw; color: white; background: var(--navy); }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 750; letter-spacing: .02em; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; color: var(--navy); background: var(--gold); font-size: 18px; }
+    .top-meta { display: flex; align-items: center; gap: 14px; color: #afbdc8; font-size: 12px; }
+    .demo-pill { border: 1px solid #476071; padding: 7px 11px; border-radius: 999px; color: #d5e1e8; }
+    .theme-toggle { padding: 8px 11px; border: 1px solid #476071; border-radius: 8px; color: #edf3f8; background: transparent; cursor: pointer; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .theme-toggle:hover { background: #1a2b3b; }
+    main { max-width: 1180px; margin: 0 auto; padding: 40px 28px 65px; }
+    .eyebrow { margin: 0 0 12px; color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 790px; margin-bottom: 13px; font-size: clamp(36px, 5vw, 57px); line-height: 1.04; letter-spacing: -.045em; }
+    .intro { max-width: 760px; margin-bottom: 23px; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .value-strip { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 34px; }
+    .value-tag { padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; color: var(--text-body); background: var(--surface); font-size: 11px; font-weight: 650; }
+    .walkthrough { padding: 19px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); box-shadow: var(--shadow); }
+    .walkthrough-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .walkthrough-top strong { font-size: 12px; }
+    .walkthrough-top span { color: var(--muted); font-size: 10px; }
+    .walkthrough-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; }
+    .walkthrough-tile { min-height: 105px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--text-body); background: var(--surface-subtle); text-align: left; cursor: pointer; }
+    .walkthrough-tile:hover { border-color: var(--teal); }
+    .walkthrough-tile[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-light); }
+    .tile-number { display: block; margin-bottom: 10px; color: var(--teal); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+    .walkthrough-tile strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 11px; }
+    .walkthrough-tile small { display: block; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .walkthrough-detail { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 18px; min-height: 92px; margin-top: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-subtle); }
+    .walkthrough-detail h3 { margin-bottom: 5px; font-size: 13px; }
+    .walkthrough-detail p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .walkthrough-controls { display: flex; align-items: center; gap: 8px; }
+    .walkthrough-controls button { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text-body); background: var(--surface); cursor: pointer; font-size: 10px; font-weight: 700; }
+    .walkthrough-controls a { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--teal); text-decoration: none; font-size: 10px; font-weight: 700; }
+    .walkthrough-controls a:hover { border-color: var(--teal); }
+    .walkthrough-controls button:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+    .walkthrough-controls button:disabled { cursor: default; opacity: .45; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin: 34px 0 15px; }
+    .section-heading h2 { margin: 0; font-size: 23px; letter-spacing: -.025em; }
+    .section-heading p { max-width: 530px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: right; }
+    .demo-grid { display: grid; grid-template-columns: 255px minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+    .scenario-rail { padding: 20px 14px; color: white; background: var(--navy); }
+    .rail-label { margin: 2px 8px 13px; color: #94a8b7; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .scenario-button { width: 100%; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 5px; padding: 11px 9px; border: 0; border-radius: 9px; color: #c0ccd5; background: transparent; text-align: left; cursor: pointer; }
+    .scenario-button:hover { background: #1b2a39; }
+    .scenario-button[aria-pressed="true"] { color: white; background: #25384a; }
+    .scenario-icon { width: 27px; height: 27px; flex: 0 0 27px; display: grid; place-items: center; border-radius: 8px; color: #f3cd74; background: #324555; font-size: 13px; }
+    .scenario-button strong { display: block; margin: 1px 0 4px; font-size: 11px; }
+    .scenario-button small { display: block; color: #aebbc8; font-size: 10px; line-height: 1.4; }
+    .rail-note { margin: 17px 7px 1px; padding: 12px; border: 1px solid #33495b; border-radius: 9px; color: #bdcbd4; font-size: 10px; line-height: 1.55; }
+    .rail-note strong { display: block; margin-bottom: 5px; color: #f0c967; }
+    .chat-panel { min-width: 0; background: var(--surface); }
+    .context-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 67px; padding: 13px 20px; border-bottom: 1px solid var(--line); }
+    .context-asset { display: flex; align-items: center; gap: 10px; }
+    .asset-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 10px; background: var(--gold-light); font-size: 17px; }
+    .context-asset strong { display: block; font-size: 12px; }
+    .context-asset small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .context-status { padding: 6px 9px; border-radius: 999px; color: var(--teal); background: var(--teal-light); font-size: 9px; font-weight: 800; white-space: nowrap; }
+    .conversation { min-height: 328px; max-height: 470px; overflow-y: auto; padding: 19px 20px 6px; background: var(--surface-subtle); }
+    .chat-intro { margin-bottom: 15px; color: var(--muted); font-size: 10px; }
+    .message { display: flex; gap: 9px; margin: 0 0 16px; align-items: flex-start; }
+    .message.user { flex-direction: row-reverse; }
+    .avatar { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; border-radius: 9px; color: var(--teal); background: var(--teal-light); font-size: 11px; font-weight: 800; }
+    .user .avatar { color: #f1ca68; background: var(--gold-light); }
+    .bubble { max-width: 88%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px 12px 12px 12px; background: var(--surface-raised); }
+    .user .bubble { border-color: var(--line); border-radius: 12px 4px 12px 12px; background: var(--surface-user); }
+    .speaker { margin-bottom: 5px; color: var(--text-strong); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+    .bubble p { margin: 0; color: var(--text-body); font-size: 12px; line-height: 1.6; white-space: pre-line; }
+    .bubble p + p { margin-top: 8px; }
+    .citation { display: inline-block; margin: 9px 5px 0 0; padding: 5px 7px; border: 1px solid #32645f; border-radius: 6px; color: #83ddce; background: #183332; font-size: 9px; font-weight: 700; }
+    .suggestions { padding: 13px 20px 15px; border-top: 1px solid var(--line); }
+    .suggestion-label { margin: 0 0 9px; color: var(--muted); font-size: 10px; font-weight: 700; }
+    .suggestion-list { display: flex; flex-wrap: wrap; gap: 7px; }
+    .suggestion { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text-body); background: var(--surface-raised); text-align: left; cursor: pointer; font-size: 10px; line-height: 1.35; }
+    .suggestion:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+    .composer { display: flex; align-items: center; gap: 9px; padding: 12px 20px; border-top: 1px solid var(--line); }
+    .composer input { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); background: var(--surface-raised); font-size: 12px; }
+    .composer input:focus { border-color: var(--teal); outline: 2px solid var(--teal-light); }
+    .send-button { flex: 0 0 auto; padding: 10px 14px; border: 0; border-radius: 9px; color: var(--navy); background: var(--gold); cursor: pointer; font-size: 11px; font-weight: 800; }
+    .disclaimer { margin: 0; padding: 0 20px 14px; color: var(--text-soft); background: var(--surface); font-size: 9px; line-height: 1.5; }
+    .capability-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 11px; }
+    .capability { padding: 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
+    .capability-icon { width: 31px; height: 31px; display: grid; place-items: center; margin-bottom: 11px; border-radius: 9px; color: var(--teal); background: var(--teal-light); font-size: 12px; font-weight: 800; }
+    .capability h3 { margin-bottom: 6px; font-size: 12px; }
+    .capability p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+    .agent-mode { display: inline-block; margin-top: 11px; padding: 5px 7px; border-radius: 6px; color: var(--teal); background: var(--teal-light); font-size: 9px; font-weight: 750; }
+    .architecture { padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
+    .arch-flow { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: stretch; gap: 8px; }
+    .arch-box { min-height: 123px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-subtle); }
+    .arch-box.core { border-color: #32645f; background: #183332; }
+    .arch-box h3 { margin-bottom: 9px; font-size: 11px; }
+    .arch-box ul { margin: 0; padding-left: 15px; color: var(--muted); font-size: 10px; line-height: 1.8; }
+    .arrow { display: grid; place-items: center; color: #9babb8; font-size: 19px; }
+    .arch-caption { margin: 13px 0 0; padding: 11px 13px; border-radius: 8px; color: var(--text-body); background: var(--surface-subtle); font-size: 10px; line-height: 1.6; }
+    .microsoft-stack { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+    .stack-card { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-subtle); }
+    .stack-card small { display: block; margin-bottom: 7px; color: var(--teal); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+    .stack-card strong { display: block; margin-bottom: 5px; font-size: 10px; }
+    .stack-card p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .architecture-note { margin: 11px 0 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
+    .footer { padding: 20px 0 0; color: var(--text-soft); font-size: 9px; text-align: center; }
+    @media (max-width: 800px) {
+      main { padding: 30px 19px 50px; }
+      .section-heading { display: block; }
+      .section-heading p { margin-top: 6px; text-align: left; }
+      .demo-grid { grid-template-columns: 205px minmax(0, 1fr); }
+      .walkthrough-tiles { grid-template-columns: repeat(3, 1fr); }
+      .capability-grid { grid-template-columns: repeat(3, 1fr); }
+      .microsoft-stack { grid-template-columns: repeat(3, 1fr); }
+      .arch-flow { grid-template-columns: 1fr; }
+      .arch-box { min-height: 0; }
+      .arrow { height: 17px; transform: rotate(90deg); }
+    }
+    @media (max-width: 580px) {
+      .topbar { height: 58px; padding: 0 14px; }
+      .top-meta { font-size: 10px; }
+      .top-meta > span:first-child { display: none; }
+      main { padding: 25px 13px 42px; }
+      .intro { font-size: 14px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .walkthrough { padding: 13px; }
+      .walkthrough-top { align-items: flex-start; flex-direction: column; }
+      .walkthrough-tiles { grid-template-columns: repeat(2, 1fr); }
+      .walkthrough-tile { min-height: 92px; }
+      .walkthrough-detail { grid-template-columns: 1fr; }
+      .walkthrough-controls { justify-content: space-between; }
+      .scenario-rail { padding: 12px; }
+      .rail-label, .rail-note { display: none; }
+      .scenario-list { display: flex; overflow-x: auto; gap: 5px; }
+      .scenario-button { width: auto; min-width: 148px; margin: 0; padding: 8px; }
+      .context-bar { padding: 11px 13px; }
+      .conversation { padding: 15px 13px 4px; }
+      .suggestions, .composer { padding-right: 13px; padding-left: 13px; }
+      .disclaimer { padding-right: 13px; padding-left: 13px; }
+      .capability-grid { gap: 8px; }
+      .capability-grid { grid-template-columns: repeat(2, 1fr); }
+      .capability { padding: 13px; }
+      .architecture { padding: 13px; }
+      .microsoft-stack { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">⌁</span> FIELDTECH COPILOT</div>
+    <div class="top-meta"><span>Executive demo · Ask a senior tech</span><span class="demo-pill">Concept experience</span><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode">☀ Light mode</button></div>
+  </header>
+
+  <main>
+    <section aria-labelledby="page-title">
+      <p class="eyebrow">A more experienced voice in your pocket</p>
+      <h1 id="page-title">Stuck on the job? Ask your copilot.</h1>
+      <p class="intro">A junior broadband technician can ask the questions they would ask a senior cable tech—at the drop, modem, tap, or amplifier. Get practical, source-backed answers for installs and troubleshooting. The copilot advises; the technician does the work.</p>
+      <div class="value-strip" aria-label="Copilot principles">
+        <span class="value-tag">Ad-hoc questions, not scripted workflows</span>
+        <span class="value-tag">Cable installs · DOCSIS · outside plant</span>
+        <span class="value-tag">No autonomous actions; technician stays in charge</span>
+      </div>
+    </section>
+
+    <section aria-labelledby="walkthrough-title">
+      <div class="section-heading">
+        <h2 id="walkthrough-title">Executive walkthrough · 5 minutes</h2>
+        <p>Five presentation-ready tiles tell the story from field challenge to Microsoft architecture. Select a tile or use the controls to step through.</p>
+      </div>
+      <div class="walkthrough">
+        <div class="walkthrough-top"><strong>THE STORY TO TELL</strong><span>Click a tile to jump to that talking point</span></div>
+        <div class="walkthrough-tiles" id="walkthrough-tiles" aria-label="Executive walkthrough tiles"></div>
+        <div class="walkthrough-detail" id="walkthrough-detail" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="demo-title">
+      <div class="section-heading">
+        <h2 id="demo-title">Ask the senior tech</h2>
+        <p>Choose a cable field scenario, then tap a sample question or ask your own. Each example shows the kind of grounded answer a senior tech might share.</p>
+      </div>
+      <div class="demo-grid">
+        <aside class="scenario-rail" aria-label="Example field scenarios">
+          <p class="rail-label">Cable field scenarios</p>
+          <nav class="scenario-list" id="scenario-list"></nav>
+          <div class="rail-note"><strong>Think out loud</strong>Ask a follow-up, describe what you see, or ask why. The copilot responds like a helpful senior colleague—not an automated dispatch or repair agent.</div>
+        </aside>
+        <section class="chat-panel" aria-label="Field technician copilot conversation">
+          <div class="context-bar">
+            <div class="context-asset"><span class="asset-icon" id="asset-icon" aria-hidden="true">⚙</span><span><strong id="asset-title"></strong><small id="asset-subtitle"></small></span></div>
+            <span class="context-status">REFERENCE ANSWERS</span>
+          </div>
+          <div class="conversation" id="conversation" aria-live="polite" aria-label="Conversation"></div>
+          <div class="suggestions">
+            <p class="suggestion-label">Try asking</p>
+            <div class="suggestion-list" id="suggestion-list"></div>
+          </div>
+          <form class="composer" id="question-form">
+            <label class="sr-only" for="question-input">Ask the field technician copilot a question</label>
+            <input id="question-input" type="text" autocomplete="off" placeholder="Ask what you would ask a senior tech…" maxlength="240">
+            <button class="send-button" type="submit">Ask →</button>
+          </form>
+          <p class="disclaimer">Interactive demo uses illustrative, scripted responses—not a live AI, connected service system, or substitute for site procedures and qualified judgment.</p>
+        </section>
+      </div>
+    </section>
+
+    <section aria-labelledby="capabilities-title">
+      <div class="section-heading">
+        <h2 id="capabilities-title">The specialists behind one copilot</h2>
+        <p>These are bounded, request-driven agent roles—not independent bots running jobs. The copilot calls only what helps answer the technician's question.</p>
+      </div>
+      <div class="capability-grid">
+        <article class="capability"><div class="capability-icon">01</div><h3>Conversation orchestrator</h3><p>Understands the ad-hoc question, keeps chat context, and assembles one clear answer from relevant read-only helpers.</p><span class="agent-mode">Every turn · no independent tasks</span></article>
+        <article class="capability"><div class="capability-icon">02</div><h3>Job &amp; CPE context</h3><p>Looks up authorized work-order, service tier, modem model, and serving-area details to ground the answer.</p><span class="agent-mode">On demand · read only</span></article>
+        <article class="capability"><div class="capability-icon">03</div><h3>Knowledge &amp; procedure</h3><p>Finds the relevant approved install guide, DOCSIS reference, plant procedure, or troubleshooting article.</p><span class="agent-mode">On demand · cited retrieval</span></article>
+        <article class="capability"><div class="capability-icon">04</div><h3>Signal &amp; plant reasoning</h3><p>Helps interpret technician-supplied readings and authorized outage context; distinguishes a possible shared issue from a premise symptom.</p><span class="agent-mode">On demand · no plant controls</span></article>
+        <article class="capability"><div class="capability-icon">05</div><h3>Safety &amp; answer check</h3><p>Checks role boundaries, sources, uncertainty, and escalation guidance before advice is shown to a junior tech.</p><span class="agent-mode">Every answer · escalate if unsure</span></article>
+      </div>
+    </section>
+
+    <section id="architecture" aria-labelledby="architecture-title">
+      <div class="section-heading">
+        <h2 id="architecture-title">Underlying Microsoft architecture</h2>
+        <p>A practical reference design for a mobile, grounded, read-only copilot. Product choices can vary with existing telco systems and licensing.</p>
+      </div>
+      <div class="architecture">
+        <div class="arch-flow" role="img" aria-label="A technician asks in a mobile app. Microsoft Copilot Studio orchestrates a response grounded by Azure AI Search and authorized telco context accessed through Power Platform connectors and Azure API Management. The cited answer returns to the technician for their judgment.">
+          <div class="arch-box"><h3>1 · Field experience</h3><ul><li>Power Apps mobile or Teams</li><li>Authenticated chat / voice UX</li><li>Technician supplies symptoms</li></ul></div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="arch-box core"><h3>2 · Copilot &amp; grounding</h3><ul><li>Microsoft Copilot Studio</li><li>Bounded helper skills</li><li>Azure AI Search retrieval</li></ul></div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="arch-box"><h3>3 · Telco knowledge &amp; data</h3><ul><li>Approved docs in SharePoint / Blob</li><li>Work-order / CPE context</li><li>OSS, NMS, outage APIs</li></ul></div>
+        </div>
+        <div class="microsoft-stack" aria-label="Microsoft technology mapping">
+          <article class="stack-card"><small>Experience</small><strong>Power Apps / Teams</strong><p>Technician-facing mobile or Teams surface, using the operator's chosen frontline UX.</p></article>
+          <article class="stack-card"><small>Conversation</small><strong>Copilot Studio</strong><p>Conversational orchestration, agent instructions, approved actions, and channel integration.</p></article>
+          <article class="stack-card"><small>Knowledge</small><strong>Azure AI Search</strong><p>Search indexed, approved DOCSIS, CPE, install, and plant documents; return grounded references.</p></article>
+          <article class="stack-card"><small>Integration</small><strong>Power Platform + Azure</strong><p>Connectors for Dataverse; API Management and Azure Functions for governed OSS / NMS reads.</p></article>
+          <article class="stack-card"><small>Trust</small><strong>Microsoft Entra ID + Azure Monitor</strong><p>Role-aware identity, least privilege, DLP / connector controls, logs, and operational monitoring.</p></article>
+        </div>
+        <p class="arch-caption"><strong>Answer path:</strong> technician question → Entra-authenticated copilot → question-scoped, read-only job/network context plus Azure AI Search over approved sources → cited answer and follow-up. A custom Azure AI Foundry model endpoint can be evaluated if the operator needs additional model deployment controls; it is an optional extension, not a second agent framework.</p>
+        <p class="architecture-note"><strong>Non-autonomous by design:</strong> keep OSS / NMS connectors read-only for this copilot. Provisioning changes, plant adjustments, dispatch, work-order updates, and equipment control are outside its permissions; technicians and authorized network teams follow their existing approval workflows.</p>
+      </div>
+    </section>
+    <p class="footer">FieldTech Copilot · Executive concept demo · Cable scenarios, readings, references, and answers are fictional examples—not validated operator procedures or RF limits.</p>
+  </main>
+
+  <script>
+    const walkthrough = [
+      {
+        title: "The field-tech gap", label: "The challenge", time: "30 sec",
+        detail: "A junior cable tech is at a customer's home, on a pole line, or beside a pedestal. They need a fast, trustworthy answer—not another portal, a long manual search, or an autonomous system making decisions for them.",
+        takeaway: "Positioning: a senior-tech-style copilot that makes existing expertise easier to reach."
+      },
+      {
+        title: "Ask in the moment", label: "The experience", time: "60 sec",
+        detail: "Show the modem-install example: the tech asks why the online light is blinking and gets conversational guidance grounded in the work order and the approved CPE guide. Then demonstrate a follow-up instead of sending the tech through a fixed decision tree.",
+        takeaway: "Executive message: the technician can ask the next question in their own words.",
+        link: "demo-title", linkLabel: "Open the cable-tech conversation"
+      },
+      {
+        title: "Trust the answer", label: "Grounding & safety", time: "60 sec",
+        detail: "Point out the cited references and clear escalation advice. The same pattern applies to node symptoms and a suspected near-home amplifier; the copilot helps the tech reason from evidence without inventing RF thresholds or making changes.",
+        takeaway: "Executive message: answers are source-backed, role-aware, and candid about uncertainty."
+      },
+      {
+        title: "Scale field knowledge", label: "Business value", time: "45 sec",
+        detail: "The copilot can make approved tribal knowledge available across installation and troubleshooting calls. A node-level pattern can prompt a better question or escalation; it does not replace network operations, alter the plant, or decide a diagnosis.",
+        takeaway: "Measure: time to find guidance, first-visit resolution, repeat truck rolls, and escalations—with a baseline and a controlled pilot."
+      },
+      {
+        title: "Microsoft foundation", label: "Architecture & next step", time: "75 sec",
+        detail: "Walk through the Microsoft reference architecture: a Power Apps or Teams frontline experience, Copilot Studio conversation, Azure AI Search retrieval over approved procedures, and least-privilege connectors to existing telco systems—with Entra ID and monitoring across the path.",
+        takeaway: "Propose a bounded pilot: one install workflow, approved knowledge set, read-only context, named safety owner, and agreed success measures.",
+        link: "architecture-title", linkLabel: "Review the Microsoft architecture"
+      }
+    ];
+
+    let activeWalkthrough = 0;
+    const walkthroughTiles = document.querySelector("#walkthrough-tiles");
+    const walkthroughDetail = document.querySelector("#walkthrough-detail");
+
+    function renderWalkthrough() {
+      walkthroughTiles.innerHTML = walkthrough.map((tile, index) => `
+        <button class="walkthrough-tile" type="button" data-walkthrough="${index}" aria-pressed="${index === activeWalkthrough}">
+          <span class="tile-number">0${index + 1} · ${tile.time}</span>
+          <strong>${tile.title}</strong>
+          <small>${tile.label}</small>
+        </button>`).join("");
+      const tile = walkthrough[activeWalkthrough];
+      walkthroughDetail.innerHTML = `
+        <div><h3>${tile.label}: ${tile.title}</h3><p>${tile.detail}<br><strong>${tile.takeaway}</strong></p></div>
+        <div class="walkthrough-controls">
+          ${tile.link ? `<a href="#${tile.link}">${tile.linkLabel} ↓</a>` : ""}
+          <button type="button" data-step="-1" ${activeWalkthrough === 0 ? "disabled" : ""}>← Back</button>
+          <button type="button" data-step="1">${activeWalkthrough === walkthrough.length - 1 ? "Start again ↺" : "Next tile →"}</button>
+        </div>`;
+      walkthroughTiles.querySelectorAll("[data-walkthrough]").forEach(button => button.addEventListener("click", () => {
+        activeWalkthrough = Number(button.dataset.walkthrough);
+        renderWalkthrough();
+      }));
+      walkthroughDetail.querySelectorAll("[data-step]").forEach(button => button.addEventListener("click", () => {
+        const direction = Number(button.dataset.step);
+        activeWalkthrough = direction === 1 && activeWalkthrough === walkthrough.length - 1
+          ? 0
+          : Math.max(0, Math.min(walkthrough.length - 1, activeWalkthrough + direction));
+        renderWalkthrough();
+      }));
+    }
+
+    const scenarios = [
+      {
+        title: "Install a cable modem", subtitle: "Service call · Home 1842", icon: "⌁",
+        opening: "I'm installing a new DOCSIS modem. It powers on, but the online light keeps blinking. What should I check first?",
+        answer: "Start with the basics: confirm the modem is connected to the assigned coax outlet, finger-tight at the modem and wall, and powered with its approved supply. Check whether the outlet has been activated for this service and whether the modem model is supported for the customer's plan.\n\nIf the coax or connector is damaged, or your approved signal test is outside the operator's install limits, don't keep swapping equipment blindly. Capture the modem status and readings, then follow your install workflow or ask your lead.",
+        sources: ["DOCSIS CPE install guide", "Work order · modem activation"],
+        questions: [
+          ["The modem isn't on the approved list. Can I use it anyway?", "Don't promise service based on a model that isn't approved for this network and plan. Check the operator's current compatible-device list or ask your lead to confirm the right customer equipment.", ["Operator · supported CPE list"]],
+          ["How do I tell if it activated?", "Check the operator's approved activation tool or workflow for the modem's provisioning state. The front-panel light is a clue, not proof of activation. If the device is online but the customer still has no service, verify the account and service status using authorized tools.", ["CPE install guide · activation checks"]],
+          ["What should I record before I leave?", "Follow the install checklist: record the installed modem model and identifier, activation result, required signal test results, and any outlet or connector work. Use your company's specified test points and pass/fail limits.", ["Install checklist · closeout"]]
+        ]
+      },
+      {
+        title: "Node issue in the area", subtitle: "Service area · Node NR-17", icon: "⌖",
+        opening: "I'm getting multiple customers with slow speeds and intermittent drops around Node NR-17. Is this likely an in-home issue?",
+        answer: "Several nearby customers reporting similar symptoms at the same time can point to a shared network issue rather than separate in-home faults. Before changing anything, check the operator's authorized outage or node-health view and compare the affected service addresses and timestamps.\n\nUse your approved meter and test points to gather the readings your workflow calls for. Note which customers and services are affected, then escalate or link the evidence to the network ticket. Don't adjust node or plant settings unless you're specifically authorized and following the plant procedure.",
+        sources: ["Network operations · area status", "Node NR-17 · maintenance notes"],
+        questions: [
+          ["How do I know if it's the node or one drop?", "Look for a pattern across customers and compare timing, service types, and authorized network status. A single premise symptom can be a drop or home issue; multiple nearby reports with a shared onset are stronger evidence of a common segment. Follow the operator's isolation and escalation workflow—don't infer a node fault from one reading.", ["Troubleshooting guide · common-area symptoms"]],
+          ["What readings should I capture?", "Use the operator's approved meter, test points, and limits for the service type. Record the measurement location, time, affected service, and result in the network ticket. This demo intentionally doesn't give universal RF pass/fail numbers; those vary by operator, plant design, and procedure.", ["Field test procedure · node and drop"]],
+          ["Should I change a node setting?", "Not as a troubleshooting guess. Node configuration and plant adjustments can affect many customers. Follow the access controls and escalation path, and have the authorized plant or network personnel review the evidence.", ["Plant access and change-control policy"]]
+        ]
+      },
+      {
+        title: "Suspect amp near a home", subtitle: "Feeder 4 · Tap 12 · Home 1842", icon: "⌁",
+        opening: "This home and two next door are seeing pixelation and low upstream speeds. There's an amplifier a few poles away. How should I think about it?",
+        answer: "A shared symptom across homes on the same nearby segment makes a common-path issue worth investigating, but it doesn't prove the amplifier is at fault. Check the operator's outage notes and map the affected accounts to the serving leg. Compare approved upstream/downstream measurements at your designated test points and look for where the symptoms begin or change.\n\nRecord the test point, time, and readings, then follow the plant escalation process. Don't open, adjust, or bypass an amplifier unless you're authorized and following the operator's safety and plant-maintenance procedure.",
+        sources: ["Plant maintenance · amplifier history", "Field procedure · feeder isolation"],
+        questions: [
+          ["How can I narrow it to that amp?", "Use your operator's approved test points to compare the signal on the affected leg and follow the local plant map and troubleshooting procedure. A qualified plant tech can help interpret the readings and determine the boundary. Don't use customer equipment as a substitute for an approved plant test point.", ["Plant troubleshooting · amplifier path"]],
+          ["What if only this home is affected?", "That makes the shared amplifier less conclusive. Check the premises path using the approved customer-premises workflow—outlet, connectors, and drop condition—and compare readings at the specified demarcation. If the fault appears beyond your scope, document what you found and escalate.", ["Premises service guide · coax path"]],
+          ["Can I open the amplifier housing?", "Only if your role, training, and work assignment authorize it and you follow the operator's plant safety procedure. Otherwise keep it closed, capture the location and customer impact, and request an authorized plant technician.", ["Plant safety and access procedure"]]
+        ]
+      }
+    ];
+
+    let activeScenario = 0;
+    const conversation = document.querySelector("#conversation");
+    const scenarioList = document.querySelector("#scenario-list");
+    const suggestions = document.querySelector("#suggestion-list");
+    const themeToggle = document.querySelector("#theme-toggle");
+
+    function setTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      const isDark = theme === "dark";
+      themeToggle.textContent = isDark ? "☀ Light mode" : "☾ Dark mode";
+      themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+      document.querySelector('meta[name="theme-color"]').content = isDark ? "#0c1520" : "#101d2b";
+      localStorage.setItem("fieldtech-theme", theme);
+    }
+
+    const savedTheme = localStorage.getItem("fieldtech-theme");
+    if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
+    themeToggle.addEventListener("click", () => {
+      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+    });
+
+    function appendMessage(kind, text, sources = []) {
+      const message = document.createElement("article");
+      message.className = `message ${kind}`;
+      const avatar = document.createElement("span");
+      avatar.className = "avatar";
+      avatar.setAttribute("aria-hidden", "true");
+      avatar.textContent = kind === "user" ? "JT" : "ST";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      const speaker = document.createElement("div");
+      speaker.className = "speaker";
+      speaker.textContent = kind === "user" ? "Junior technician" : "FieldTech Copilot · senior-tech guidance";
+      const body = document.createElement("p");
+      body.textContent = text;
+      bubble.append(speaker, body);
+      if (sources.length) {
+        sources.forEach(source => {
+          const citation = document.createElement("span");
+          citation.className = "citation";
+          citation.textContent = `▤ ${source}`;
+          bubble.append(citation);
+        });
+      }
+      message.append(avatar, bubble);
+      conversation.append(message);
+      conversation.scrollTop = conversation.scrollHeight;
+    }
+
+    function showScenario(index) {
+      activeScenario = index;
+      const scenario = scenarios[index];
+      document.querySelector("#asset-icon").textContent = scenario.icon;
+      document.querySelector("#asset-title").textContent = scenario.title;
+      document.querySelector("#asset-subtitle").textContent = scenario.subtitle;
+      scenarioList.innerHTML = scenarios.map((item, itemIndex) => `
+        <button class="scenario-button" type="button" data-scenario="${itemIndex}" aria-pressed="${itemIndex === index}">
+          <span class="scenario-icon" aria-hidden="true">${item.icon}</span>
+          <span><strong>${item.title}</strong><small>${item.subtitle}</small></span>
+        </button>`).join("");
+      scenarioList.querySelectorAll("[data-scenario]").forEach(button => button.addEventListener("click", () => showScenario(Number(button.dataset.scenario))));
+      conversation.replaceChildren();
+      const intro = document.createElement("p");
+      intro.className = "chat-intro";
+      intro.textContent = "Maya Chen · Junior field technician · on site";
+      conversation.append(intro);
+      appendMessage("user", scenario.opening);
+      appendMessage("copilot", scenario.answer, scenario.sources);
+      suggestions.innerHTML = scenario.questions.map((question, questionIndex) =>
+        `<button class="suggestion" type="button" data-question="${questionIndex}">${question[0]}</button>`).join("");
+      suggestions.querySelectorAll("[data-question]").forEach(button => button.addEventListener("click", () => askQuestion(Number(button.dataset.question))));
+    }
+
+    function askQuestion(questionIndex) {
+      const question = scenarios[activeScenario].questions[questionIndex];
+      appendMessage("user", question[0]);
+      appendMessage("copilot", question[1], question[2]);
+    }
+
+    document.querySelector("#question-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.querySelector("#question-input");
+      const question = input.value.trim();
+      if (!question) return;
+      appendMessage("user", question);
+      appendMessage("copilot", "That's a good question. This demo uses scripted examples rather than a live network or knowledge system, so I can't verify a new answer here. In a deployed copilot, I would use your authorized work-order and network context, retrieve the operator-approved procedure, and show you the source. I would also say when I don't have enough information. For now, try one of the example follow-up questions and follow your operator's safety and plant procedures.", ["Demo limitation · no live network lookup"]);
+      input.value = "";
+    });
+
+    renderWalkthrough();
+    const initialTheme = document.documentElement.dataset.theme;
+    themeToggle.textContent = initialTheme === "dark" ? "☀ Light mode" : "☾ Dark mode";
+    themeToggle.setAttribute("aria-label", `Switch to ${initialTheme === "dark" ? "light" : "dark"} mode`);
+    document.querySelector('meta[name="theme-color"]').content = initialTheme === "dark" ? "#0c1520" : "#101d2b";
+    showScenario(0);
+  </script>
+</body>
+</html>
